@@ -1,0 +1,2 @@
+poe-api
+discord
