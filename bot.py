@@ -73,6 +73,11 @@ async def on_message(message):
             waitingForMessage = False
             print("Resumed listening for new messages")
 
+def message_thread(poeClient, chatModelCodename, user_message):
+    for chunk in poeClient.send_message(chatModelCodename, user_message):
+        pass
+    return chunk["text"]
+
 @tree.command(name="chat", description="Have a chat with ZymBot")
 async def chat(interaction: discord.Interaction, *, message: str):
     await interaction.response.defer(ephemeral=False)
@@ -81,7 +86,7 @@ async def chat(interaction: discord.Interaction, *, message: str):
     username = str(interaction.user)
     channel = str(interaction.channel)
     print(f"\x1b[31m{username}\x1b[0m : /chat [{message}] in ({channel})")
-    await interaction.followup.send("**Error**: This command has not be programmed yet. Talk to me by pinging me instead!")
+    await interaction.followup.send("**Error**: This command has not been programmed yet. Talk to me by pinging me instead!")
 
 @tree.command(name="chat-model", description="Switch to a different chat model")
 @app_commands.choices(choices=[
