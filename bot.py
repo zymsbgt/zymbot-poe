@@ -15,14 +15,14 @@ load_dotenv()
 
 if bypassPoeLogin == False:
     poeClient = poe.Client(os.getenv('POE_TOKEN'))
-    # print(poeClient.bot_names)
-    poeClient.send_chat_break("chinchilla")
+    print(poeClient.bot_names) # Uncomment this to see the list of available Poe models
+    poeClient.send_chat_break(chatModelCodename)
 
     with open('starting-prompt.txt', 'r') as file:
         message = file.read()
 
     # ChatGPT (codename "chinchilla")
-    for chunk in poeClient.send_message("chinchilla", message):
+    for chunk in poeClient.send_message(chatModelCodename, message):
         try:
             print(chunk["text_new"], end="", flush=True)
         except:
@@ -61,11 +61,11 @@ async def on_message(message):
         print("Paused listening for new messages")
         waitingForMessage = True
         await asyncio.sleep(4)
-        async with message.channel.typing():
-            for chunk in poeClient.send_message(chatModelCodename, user_message):
-                pass
-        print(chunk["text"])
         try:
+            async with message.channel.typing():
+                for chunk in poeClient.send_message(chatModelCodename, user_message):
+                    pass
+            print(chunk["text"])
             await message.channel.send(chunk["text"])
         except Exception as err:
             await message.channel.send(f"Error sending message: {err}")
@@ -93,7 +93,10 @@ async def chat(interaction: discord.Interaction, *, message: str):
     app_commands.Choice(name="ChatGPT-3.5", value="ChatGPT3"),
     app_commands.Choice(name="Claude", value="Claude"),
     app_commands.Choice(name="Cadence", value="Cadence"),
-    app_commands.Choice(name="Firefox", value="NeevaAI")
+    app_commands.Choice(name="Chromium", value="NeevaAI"),
+    app_commands.Choice(name="Cipher", value="SecretBot"),
+    app_commands.Choice(name="Codium", value="Phind"),
+    app_commands.Choice(name="Cassiopeia", value="DallE")
 ])
 async def chat_model(interaction: discord.Interaction, choices: app_commands.Choice[str]):
     global chatModelCodename
@@ -104,12 +107,15 @@ async def chat_model(interaction: discord.Interaction, choices: app_commands.Cho
     elif choices.value == "Claude":
         chatModelCodename = "a2"
         await interaction.followup.send(f"**INFO: Switched chat model to Claude!**\n")
-    elif choices.value == "Cadence":
-        # chatModelCodename = ""
-        await interaction.followup.send(f"**INFO**: Cadence model is coming soon!\n")
     elif choices.value == "NeevaAI":
         chatModelCodename = "hutia"
-        await interaction.followup.send(f"**INFO: Switched chat model to Firefox!**\n")
+        await interaction.followup.send(f"**INFO: Switched chat model to Chromium!**\n")
+    elif choices.value == "SecretBot":
+        chatModelCodename = "secretbot"
+        await interaction.followup.send(f"**INFO: Switched chat model to Cipher!**\nIn this game, you has five attempts to guess the game master's secret, using hints provided by the game master, the first hint is free and doesn’t count an attempt. To begin, please select the difficulty first, easy, medium, or hard?\n")
+    elif (choices.value == "Cadence" or choices.value == "Phind" or choices.value == "DallE"):
+        # chatModelCodename = ""
+        await interaction.followup.send(f"**INFO**: {choices.value} model is coming soon!\n")
     else:
         await interaction.followup.send(f"**INFO: Switching models is coming soon!**\n")
 
