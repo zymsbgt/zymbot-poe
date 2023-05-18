@@ -9,13 +9,14 @@ from dotenv import load_dotenv # new discord bot token library
 waitingForMessage = False
 chatModel = "ChatGPT3"
 chatModelCodename = "chinchilla"
+unimplementedChatModels = ["Cadence", "Phind", "DallE"]
 bypassPoeLogin = False # For debugging only. Leave this as False during production
 
 load_dotenv()
 
 if bypassPoeLogin == False:
     poeClient = poe.Client(os.getenv('POE_TOKEN'))
-    print(poeClient.bot_names) # Uncomment this to see the list of available Poe models
+    print(poeClient.bot_names) # shows the list of available Poe models
     poeClient.send_chat_break(chatModelCodename)
 
     with open('starting-prompt.txt', 'r') as file:
@@ -92,13 +93,13 @@ async def chat(interaction: discord.Interaction, *, message: str):
 @app_commands.choices(choices=[
     app_commands.Choice(name="ChatGPT-3.5", value="ChatGPT3"),
     app_commands.Choice(name="Claude", value="Claude"),
-    app_commands.Choice(name="Cadence", value="Cadence"),
+    # app_commands.Choice(name="Cadence", value="Cadence"),
     app_commands.Choice(name="Chromium", value="NeevaAI"),
-    app_commands.Choice(name="Cipher", value="SecretBot"),
-    app_commands.Choice(name="Codium", value="Phind"),
-    app_commands.Choice(name="Cassiopeia", value="DallE")
+    app_commands.Choice(name="Cipher", value="SecretBot")
+    # app_commands.Choice(name="Codium", value="Phind"),
+    # app_commands.Choice(name="Cassiopeia", value="DallE")
 ])
-async def chat_model(interaction: discord.Interaction, choices: app_commands.Choice[str]):
+async def chatModelCommand(interaction: discord.Interaction, choices: app_commands.Choice[str]):
     global chatModelCodename
     await interaction.response.defer(ephemeral=False)
     if choices.value == "ChatGPT3":
@@ -113,11 +114,10 @@ async def chat_model(interaction: discord.Interaction, choices: app_commands.Cho
     elif choices.value == "SecretBot":
         chatModelCodename = "secretbot"
         await interaction.followup.send(f"**INFO: Switched chat model to Cipher!**\nIn this game, you has five attempts to guess the game master's secret, using hints provided by the game master, the first hint is free and doesn’t count an attempt. To begin, please select the difficulty first, easy, medium, or hard?\n")
-    elif (choices.value == "Cadence" or choices.value == "Phind" or choices.value == "DallE"):
-        # chatModelCodename = ""
+    elif choices.value in unimplementedChatModels:
         await interaction.followup.send(f"**INFO**: {choices.value} model is coming soon!\n")
     else:
-        await interaction.followup.send(f"**INFO: Switching models is coming soon!**\n")
+        await interaction.followup.send(f"**INFO: This model is coming soon!**\n")
 
 discord_token = os.getenv('DISCORD_TOKEN')
 discordBot.run(discord_token)
