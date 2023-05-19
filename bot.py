@@ -58,7 +58,11 @@ async def on_message(message):
     guild = str(message.guild.name)
 
     if discordBot.user.mentioned_in(message):
-        print(f'Pinged in message: {username} on #{channel} in "{guild}": {user_message}')
+        print(f'{username} on #{channel} in "{guild}": {user_message}')
+        BlacklistWords = ['instagram.com/p', 'instagram.com/reel']
+        if any(keyword in message.content for keyword in BlacklistWords):
+            print("Blacklisted keyword detected, not replying to user")
+            return
         print("Paused listening for new messages")
         waitingForMessage = True
         await asyncio.sleep(4)
