@@ -74,6 +74,7 @@ async def on_message(message):
             waitingForMessage = False
             print("Resumed listening for new messages")
 
+# This function is currently unused
 def message_thread(poeClient, chatModelCodename, user_message):
     for chunk in poeClient.send_message(chatModelCodename, user_message):
         pass
@@ -91,29 +92,36 @@ async def chat(interaction: discord.Interaction, *, message: str):
 
 @tree.command(name="chat-model", description="Switch to a different chat model")
 @app_commands.choices(choices=[
+    # app_commands.Choice(name="Help", value="Help"),
     app_commands.Choice(name="ChatGPT-3.5", value="ChatGPT3"),
     app_commands.Choice(name="Claude", value="Claude"),
     # app_commands.Choice(name="Cadence", value="Cadence"),
     app_commands.Choice(name="Chromium", value="NeevaAI"),
-    app_commands.Choice(name="Cipher", value="SecretBot")
+    app_commands.Choice(name="Cipher", value="SecretBot"),
     # app_commands.Choice(name="Codium", value="Phind"),
     # app_commands.Choice(name="Cassiopeia", value="DallE")
+    app_commands.Choice(name="Dragonfly", value="Dragonfly")
 ])
 async def chatModelCommand(interaction: discord.Interaction, choices: app_commands.Choice[str]):
     global chatModelCodename
     await interaction.response.defer(ephemeral=False)
+    # if choices.value == "Help":
+    #     await interaction.followup.send(f"**INFO:** Here's a list of chat models and their personality types: <https://poe.com/about>\n")
     if choices.value == "ChatGPT3":
         chatModelCodename = "chinchilla"
-        await interaction.followup.send(f"**INFO: Switched chat model to ChatGPT-3.5 (default)!**\n")
+        await interaction.followup.send(f"**ChatGPT-3.5:** World famous ChatGPT by OpenAI. (default)\n")
     elif choices.value == "Claude":
         chatModelCodename = "a2"
-        await interaction.followup.send(f"**INFO: Switched chat model to Claude!**\n")
+        await interaction.followup.send(f"**Claude:** Anthropic's AI chatbot, with strength in creative writing. The same AI that's integrated in Zoom\n")
     elif choices.value == "NeevaAI":
         chatModelCodename = "hutia"
-        await interaction.followup.send(f"**INFO: Switched chat model to Chromium!**\n")
+        await interaction.followup.send(f"**Chromium:** Surfs the internet\n")
     elif choices.value == "SecretBot":
         chatModelCodename = "secretbot"
-        await interaction.followup.send(f"**INFO: Switched chat model to Cipher!**\nIn this game, you has five attempts to guess the game master's secret, using hints provided by the game master, the first hint is free and doesn’t count an attempt. To begin, please select the difficulty first, easy, medium, or hard?\n")
+        await interaction.followup.send(f"**Cipher:** In this game, you has five attempts to guess the game master's secret, using hints provided by the game master, the first hint is free and doesn’t count an attempt. To begin, please select the difficulty first, easy, medium, or hard?\n")
+    elif choices.value == "Dragonfly":
+        chatModelCodename = "nutria"
+        await interaction.followup.send(f"**Dragonfly:** Gives shorter responses, and excels at following instructions when given examples in the input. Powered by OpenAI's text-davinci-003\n")
     elif choices.value in unimplementedChatModels:
         await interaction.followup.send(f"**INFO**: {choices.value} model is coming soon!\n")
     else:
