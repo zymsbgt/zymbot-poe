@@ -10,7 +10,7 @@ waitingForMessage = False
 chatModel = "ChatGPT3"
 chatModelCodename = "chinchilla"
 unimplementedChatModels = ["Cadence", "Phind", "DallE"]
-bypassPoeLogin = False # For debugging only. Leave this as False during production
+bypassPoeLogin = True # For debugging only. Leave this as False during production
 
 load_dotenv()
 
@@ -44,9 +44,9 @@ async def on_ready():
     for server in servers:
         print(server.name)
     print('server successfully started as {0.user}'.format(discordBot))
-    # discordBot.tree = app_commands.CommandTree(self)
-    activity = discord.Activity(type=discord.ActivityType.listening, name="people to chat with (ping me!)")
-    await discordBot.change_presence(activity=activity)
+    if bypassPoeLogin == False:
+        activity = discord.Activity(type=discord.ActivityType.listening, name="people to chat with (ping me!)")
+        await discordBot.change_presence(activity=activity)
     await tree.sync()
 
 @discordBot.event
@@ -59,10 +59,11 @@ async def on_message(message):
 
     if discordBot.user.mentioned_in(message):
         print(f'{username} on #{channel} in "{guild}": {user_message}')
-        BlacklistWords = ['instagram.com/p', 'instagram.com/reel']
-        if any(keyword in message.content for keyword in BlacklistWords):
-            print("Blacklisted keyword detected, not replying to user")
-            return
+        if chatModelCodename != "hutia": # NeevaAI / Chromium
+            BlacklistWords = ['instagram.com/p', 'instagram.com/reel']
+            if any(keyword in message.content for keyword in BlacklistWords):
+                print("Blacklisted keyword detected, not replying to user")
+                return
         print("Paused listening for new messages")
         waitingForMessage = True
         await asyncio.sleep(4)
