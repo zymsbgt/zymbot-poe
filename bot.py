@@ -10,7 +10,7 @@ waitingForMessage = False
 chatModel = "ChatGPT3"
 chatModelCodename = "chinchilla"
 unimplementedChatModels = ["Cadence", "Phind", "DallE"]
-bypassPoeLogin = True # For debugging only. Leave this as False during production
+bypassPoeLogin = False # For debugging only. Leave this as False during production
 
 load_dotenv()
 
@@ -59,11 +59,10 @@ async def on_message(message):
 
     if discordBot.user.mentioned_in(message):
         print(f'{username} on #{channel} in "{guild}": {user_message}')
-        if chatModelCodename != "hutia": # NeevaAI / Chromium
-            BlacklistWords = ['instagram.com/p', 'instagram.com/reel']
-            if any(keyword in message.content for keyword in BlacklistWords):
-                print("Blacklisted keyword detected, not replying to user")
-                return
+        BlacklistWords = ['instagram.com/p', 'instagram.com/reel']
+        if any(keyword in message.content for keyword in BlacklistWords):
+            print("Blacklisted keyword detected, not replying to user")
+            return
         print("Paused listening for new messages")
         waitingForMessage = True
         await asyncio.sleep(4)
@@ -101,7 +100,6 @@ async def chat(interaction: discord.Interaction, *, message: str):
     app_commands.Choice(name="ChatGPT-3.5", value="ChatGPT3"),
     app_commands.Choice(name="Claude", value="Claude"),
     # app_commands.Choice(name="Cadence", value="Cadence"),
-    app_commands.Choice(name="Chromium", value="NeevaAI"),
     app_commands.Choice(name="Cipher", value="SecretBot"),
     # app_commands.Choice(name="Codium", value="Phind"),
     # app_commands.Choice(name="Cassiopeia", value="DallE")
@@ -118,9 +116,6 @@ async def chatModelCommand(interaction: discord.Interaction, choices: app_comman
     elif choices.value == "Claude":
         chatModelCodename = "a2"
         await interaction.followup.send(f"**Claude:** Anthropic's AI chatbot, with strength in creative writing. The same AI that's integrated in Zoom\n")
-    elif choices.value == "NeevaAI":
-        chatModelCodename = "hutia"
-        await interaction.followup.send(f"**Chromium:** Surfs the internet\n")
     elif choices.value == "SecretBot":
         chatModelCodename = "secretbot"
         await interaction.followup.send(f"**Cipher:** In this game, you has five attempts to guess the game master's secret, using hints provided by the game master, the first hint is free and doesn’t count an attempt. To begin, please select the difficulty first, easy, medium, or hard?\n")
