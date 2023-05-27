@@ -66,7 +66,7 @@ async def on_message(message):
         print("Paused listening for new messages")
         waitingForMessage = True
         # if (chatModelCodename == "chinchilla") or (chatModelCodename == "secretbot"):
-        ChatGPTModels = ["chinchilla", "secretbot"]
+        ChatGPTModels = ["chinchilla", "secretbot", "nutria"]
         if any(keyword in chatModelCodename for keyword in ChatGPTModels):
             await asyncio.sleep(4)
         try:
