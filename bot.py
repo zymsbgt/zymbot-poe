@@ -59,10 +59,15 @@ async def on_message(message):
 
     if discordBot.user.mentioned_in(message):
         print(f'{username} on #{channel} in "{guild}": {user_message}')
+
         BlacklistWords = ['instagram.com/reel']
         if any(keyword in message.content for keyword in BlacklistWords):
             print("Blacklisted keyword detected, not replying to user")
             return
+        if waitingForMessage == True:
+            print("Ignoring message as another message is currently processing")
+            return
+        
         print("Paused listening for new messages")
         waitingForMessage = True
         # if (chatModelCodename == "chinchilla") or (chatModelCodename == "secretbot"):
