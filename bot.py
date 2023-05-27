@@ -59,13 +59,16 @@ async def on_message(message):
 
     if discordBot.user.mentioned_in(message):
         print(f'{username} on #{channel} in "{guild}": {user_message}')
-        BlacklistWords = ['instagram.com/p', 'instagram.com/reel']
+        BlacklistWords = ['instagram.com/reel']
         if any(keyword in message.content for keyword in BlacklistWords):
             print("Blacklisted keyword detected, not replying to user")
             return
         print("Paused listening for new messages")
         waitingForMessage = True
-        await asyncio.sleep(4)
+        # if (chatModelCodename == "chinchilla") or (chatModelCodename == "secretbot"):
+        ChatGPTModels = ["chinchilla", "secretbot"]
+        if any(keyword in chatModelCodename for keyword in ChatGPTModels):
+            await asyncio.sleep(4)
         try:
             async with message.channel.typing():
                 for chunk in poeClient.send_message(chatModelCodename, user_message):
@@ -77,12 +80,6 @@ async def on_message(message):
         finally:
             waitingForMessage = False
             print("Resumed listening for new messages")
-
-# This function is currently unused
-def message_thread(poeClient, chatModelCodename, user_message):
-    for chunk in poeClient.send_message(chatModelCodename, user_message):
-        pass
-    return chunk["text"]
 
 @tree.command(name="chat", description="Have a chat with ZymBot")
 async def chat(interaction: discord.Interaction, *, message: str):
