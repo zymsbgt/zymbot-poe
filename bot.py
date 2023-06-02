@@ -9,7 +9,7 @@ from dotenv import load_dotenv # new discord bot token library
 waitingForMessage = False
 chatModel = "ChatGPT3"
 chatModelCodename = "chinchilla"
-unimplementedChatModels = ["Cadence", "Phind", "DallE"]
+unimplementedChatModels = ["Phind", "DallE"]
 bypassPoeLogin = False # For debugging only. Leave this as False during production
 
 load_dotenv()
@@ -70,21 +70,21 @@ async def on_message(message):
         
         print("Paused listening for new messages")
         waitingForMessage = True
-        # if (chatModelCodename == "chinchilla") or (chatModelCodename == "secretbot"):
-        ChatGPTModels = ["chinchilla", "secretbot", "nutria"]
-        if any(keyword in chatModelCodename for keyword in ChatGPTModels):
-            await asyncio.sleep(4)
+        # ChatGPTModels = ["chinchilla", "secretbot", "nutria"]
+        # if any(keyword in chatModelCodename for keyword in ChatGPTModels):
+        await asyncio.sleep(4)
         try:
             async with message.channel.typing():
                 for chunk in poeClient.send_message(chatModelCodename, user_message):
                     pass
             print(chunk["text"])
-            await message.channel.send(chunk["text"])
-        except Exception as err:
-            await message.channel.send(f"Error sending message: {err}")
-        finally:
             waitingForMessage = False
             print("Resumed listening for new messages")
+            await message.channel.send(chunk["text"])
+        except Exception as err:
+            waitingForMessage = False
+            print("Resumed listening for new messages")
+            await message.channel.send(f"Error sending message: {err}")
 
 @tree.command(name="chat", description="Have a chat with ZymBot")
 async def chat(interaction: discord.Interaction, *, message: str):
@@ -101,7 +101,6 @@ async def chat(interaction: discord.Interaction, *, message: str):
     # app_commands.Choice(name="Help", value="Help"),
     app_commands.Choice(name="ChatGPT-3.5", value="ChatGPT3"),
     app_commands.Choice(name="Claude", value="Claude"),
-    # app_commands.Choice(name="Cadence", value="Cadence"),
     app_commands.Choice(name="Cipher", value="SecretBot"),
     # app_commands.Choice(name="Codium", value="Phind"),
     # app_commands.Choice(name="Cassiopeia", value="DallE")
